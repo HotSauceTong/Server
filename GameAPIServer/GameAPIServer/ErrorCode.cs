@@ -3,7 +3,6 @@
     public enum ErrorCode : Int16
     {
         None = 0,
-
         // Db Error 50 ~ 99
         SessionError = 50,
         GameDbError = 51,

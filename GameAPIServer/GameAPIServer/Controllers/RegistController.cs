@@ -28,7 +28,7 @@ public class RegistController : ControllerBase
     public async Task<RegistResponse> Regist(RegisteRequest request)
     {
         var response = new RegistResponse();
-        
+
         var (salt, hashedPassword) = Security.GetSaltAndHashedPassword(request.password);
         (response.errorCode, var userAccountKey) = await _gameDbService.InsertUserAccount( new UserAccount { 
             email = request.email,
@@ -46,7 +46,6 @@ public class RegistController : ControllerBase
             consecutive_login_count = 0,
             last_login_date = new DateTime(9999, 12, 31, 23, 59, 59)
         });
-
         return response;
     }
 }
