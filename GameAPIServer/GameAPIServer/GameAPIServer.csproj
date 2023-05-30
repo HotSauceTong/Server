@@ -1,15 +1,16 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
+    <ContainerImageName>hsst_api_server_img</ContainerImageName>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="CloudStructures" Version="3.2.0" />
+    <PackageReference Include="Microsoft.NET.Build.Containers" Version="7.0.302" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.2" />
     <PackageReference Include="MySqlConnector" Version="2.2.6" />
     <PackageReference Include="SqlKata" Version="2.4.0" />

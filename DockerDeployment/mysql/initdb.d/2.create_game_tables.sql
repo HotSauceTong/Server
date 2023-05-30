@@ -1,11 +1,22 @@
 -- CREATE DATABASE IF NOT EXISTS df_game_db DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT ENCRYPTION='N';
 -- USE df_game_db;
+CREATE DATABASE IF NOT EXISTS hsst_game_db DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT ENCRYPTION='N';
+USE hsst_game_db;
 
-CREATE TABLE IF NOT EXISTS login_log
+CREATE TABLE IF NOT EXISTS user_accounts
+(
+	user_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+	email VARCHAR(50) UNIQUE NOT NULL,
+	nickname VARCHAR(50) UNIQUE NOT NULL,
+	salt BINARY(16) NOT NULL,
+	hashed_password BINARY(32) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS user_attendences
 (
 	user_id BIGINT NOT NULL UNIQUE COMMENT '유저의 고유 넘버, Account db의 값과 일치',
 	consecutive_login_count INT NOT NULL DEFAULT 0 COMMENT '연속접속 횟수',
-	last_login_date DATETIME COMMENT '마지막 접속'
+	last_login_date DATETIME NOT NULL COMMENT '마지막 접속'
 );
 
 -- CREATE TABLE IF NOT EXISTS user_items

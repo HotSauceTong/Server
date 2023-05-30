@@ -4,6 +4,7 @@ using GameAPIServer.ReqResModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using GameAPIServer.DatabaseServices.GameDb.Models;
+using GameAPIServer.Utils;
 
 namespace GameAPIServer.Controllers;
 
@@ -27,13 +28,24 @@ public class RegistController : ControllerBase
     public async Task<RegistResponse> Regist(RegisteRequest request)
     {
         var response = new RegistResponse();
-        await _gameDbService.InsertUserAccount( new UserAccount { 
+        
+        var (salt, hashedPassword) = Security.GetSaltAndHashedPassword(request.password);
+        (response.errorCode, var userAccountKey) = await _gameDbService.InsertUserAccount( new UserAccount { 
             email = request.email,
             nickname = request.nickname,
-            salt = new byte[0],
-            hashed_password = new byte[0]
+            salt = salt,
+            hashed_password = hashedPassword
         });
-
+        if (response.errorCode != ErrorCode.None)
+        {
+            return response;
+        }
+        (response.errorCode, var userAttendenceKey) = await _gameDbService.InsertUserAttendence(new UserAttendence
+        {
+            user_id = userAccountKey,
+            consecutive_login_count = 0,
+            last_login_date = new DateTime(9999, 12, 31, 23, 59, 59)
+        });
 
         return response;
     }

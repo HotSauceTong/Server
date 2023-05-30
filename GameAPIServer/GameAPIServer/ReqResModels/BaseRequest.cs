@@ -7,6 +7,5 @@ namespace GameAPIServer.ReqResModels
         [Required] public String userEmail { get; set; }
         [Required] public String token { get; set; }
         [Required] public String clientVersion { get; set; }
-        //[Required] public String masterDataVersion { get; set; }
     }
 }

@@ -2,6 +2,6 @@
 {
     public class BaseResponse
     {
-        ErrorCode errorCode;
+        public ErrorCode errorCode { get; set; }
     }
 }

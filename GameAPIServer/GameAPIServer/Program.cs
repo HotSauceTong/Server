@@ -1,6 +1,10 @@
+using GameAPIServer.DatabaseServices.GameDb;
 using GameAPIServer.Filter;
 using GameAPIServer.MiddleWare;
 using ZLogger;
+
+// delay for DB containers
+await Task.Delay(10000);
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,7 +24,7 @@ builder.Services.AddLogging(logging =>
     logging.AddZLoggerRollingFile((dt, x) => $"logs/{dt.ToLocalTime():yyyy-MM-dd}_{x:000}.log", x => x.ToLocalTime().Date, 1024);
     logging.AddZLoggerConsole(options => { options.EnableStructuredLogging = true; });
 });
-
+builder.Services.AddTransient<IGameDbService, MysqlGameDbService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

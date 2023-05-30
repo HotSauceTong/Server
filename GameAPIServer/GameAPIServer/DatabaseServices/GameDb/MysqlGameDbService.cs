@@ -20,18 +20,18 @@ public class MysqlGameDbService : IGameDbService
         var compiler = new MySqlCompiler();
         _queryFactory = new QueryFactory(connection, compiler);
     }
-    public async Task<ErrorCode> InsertUserAccount(UserAccount userAccount)
+    public async Task<(ErrorCode, Int64 key)> InsertUserAccount(UserAccount userAccount)
     {
         try
         {
-            await _queryFactory.Query("user_account").InsertAsync(new
+            var key = await _queryFactory.Query("user_accounts").InsertGetIdAsync<Int64>(new
             {
                 email = userAccount.email,
                 nickname = userAccount.nickname,
                 salt = userAccount.salt,
                 hashed_password = userAccount.hashed_password
             });
-            return ErrorCode.None;
+            return (ErrorCode.None, key);
         }
         catch (MySqlException ex)
         {
@@ -39,20 +39,20 @@ public class MysqlGameDbService : IGameDbService
             {
                 if (ex.Message.Contains("email"))
                 { 
-                    return ErrorCode.EmailAlreadyExist;
+                    return (ErrorCode.EmailAlreadyExist, -1);
                 }
                 else
                 {
-                    return ErrorCode.NicknameAlreadyExist;
+                    return (ErrorCode.NicknameAlreadyExist, -1);
                 }
             }
             _logger.ZLogErrorWithPayload(ex, new { email = userAccount.email }, "InsertUserAccount MysqlEXCEPTION");
-            return ErrorCode.GameDbError;
+            return (ErrorCode.GameDbError, -1);
         }
         catch (Exception ex)
         {
             _logger.ZLogErrorWithPayload(ex, new { email = userAccount.email }, "InsertUserAccount EXCEPTION");
-            return ErrorCode.GameDbError;
+            return (ErrorCode.GameDbError, -1);
         }
     }
 
@@ -61,7 +61,7 @@ public class MysqlGameDbService : IGameDbService
     {
         try
         {
-            await _queryFactory.Query("user_account")
+            await _queryFactory.Query("user_accounts")
                 .Where( new { user_id = userId } )
                 .DeleteAsync();
             return ErrorCode.None;
@@ -73,32 +73,32 @@ public class MysqlGameDbService : IGameDbService
         }
     }
 
-    public async Task<ErrorCode> InsertUserAttendence(UserAttendence userAttendence)
+    public async Task<(ErrorCode, Int64 key)> InsertUserAttendence(UserAttendence userAttendence)
     {
         try
         {
-            await _queryFactory.Query("user_attendence").InsertAsync(new
+            var key = await _queryFactory.Query("user_attendences").InsertGetIdAsync<Int64>(new
             {
                 user_id = userAttendence.user_id,
                 consecutive_login_count = userAttendence.consecutive_login_count,
                 last_login_date = userAttendence.last_login_date
             });
-            return ErrorCode.None;
+            return (ErrorCode.None, key);
         }
         catch (MySqlException ex)
         {
             if (ex.Number == 1062) //duplicated id exception
             {
                 _logger.ZLogErrorWithPayload(ex, new { userId = userAttendence.user_id }, "InsertUserAttendence user_id duplicated");
-                return ErrorCode.GameDbError;
+                return (ErrorCode.GameDbError, -1);
             }
             _logger.ZLogErrorWithPayload(ex, new { userId = userAttendence.user_id }, "InsertUserAttendence MysqlEXCEPTION");
-            return ErrorCode.GameDbError;
+            return (ErrorCode.GameDbError, -1);
         }
         catch (Exception ex)
         {
             _logger.ZLogErrorWithPayload(ex, new { userId = userAttendence.user_id }, "InsertUserAttendence EXCEPTION");
-            return ErrorCode.GameDbError;
+            return (ErrorCode.GameDbError, -1);
         }
     }
 }

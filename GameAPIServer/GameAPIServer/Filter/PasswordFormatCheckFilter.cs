@@ -19,7 +19,7 @@ public class PasswordFormatCheckFilter : ActionFilterAttribute
 
         if (IsValidPassword(password) == false)
         {
-            await SetContext(context.HttpContext, ErrorCode.InvalidEmailFormat);
+            await SetContext(context.HttpContext, ErrorCode.InvalidPasswordFormat);
             return;
         }
 

@@ -19,7 +19,7 @@ public class NicknameFormatCheckFilter : ActionFilterAttribute
 
         if (IsValidNickname(nickname) == false)
         {
-            await SetContext(context.HttpContext, ErrorCode.InvalidEmailFormat);
+            await SetContext(context.HttpContext, ErrorCode.InvalidNicknameFormat);
             return;
         }
 
