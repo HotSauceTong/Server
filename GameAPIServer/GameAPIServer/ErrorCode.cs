@@ -11,12 +11,16 @@
         InvalidRequestFormat = 100,
         InvalidEmailFormat = 101,
         InvalidPasswordFormat = 102,
-        InvalidClientVersion = 103,
+        InvalidClientVersion = 103, //  TODO: 버전검사 위치를 다른 영역으로 옮기기
         InvalidNicknameFormat = 104,
 
-        // Regist Error
+        // Regist Error 200 ~ 299
         EmailAlreadyExist = 201,
         NicknameAlreadyExist = 202,
-
+         
+        //Login Error 300 ~ 399
+        NotExistEmail = 301,
+        WrongPassword = 302,
+        ExpiredSession = 303,
     }
 }

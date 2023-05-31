@@ -1,5 +1,6 @@
 
 using GameAPIServer.DatabaseServices.GameDb;
+using GameAPIServer.DatabaseServices.SessionDb;
 using GameAPIServer.Filter;
 using GameAPIServer.MiddleWare;
 using ZLogger;
@@ -13,9 +14,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers(options =>
 {
-    options.Filters.Add<EmailFormatCheckFilter>();
-    options.Filters.Add<NicknameFormatCheckFilter>();
-    options.Filters.Add<PasswordFormatCheckFilter>();
+    //options.Filters.Add<EmailFormatCheckFilter>();
+    //options.Filters.Add<NicknameFormatCheckFilter>();
+    //options.Filters.Add<PasswordFormatCheckFilter>();
 });
 builder.Services.AddLogging(logging =>
 {
@@ -26,6 +27,7 @@ builder.Services.AddLogging(logging =>
     logging.AddZLoggerConsole(options => { options.EnableStructuredLogging = true; });
 });
 builder.Services.AddTransient<IGameDbService, MysqlGameDbService>();
+builder.Services.AddSingleton<ISessionDbService, RedisSessionDbService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

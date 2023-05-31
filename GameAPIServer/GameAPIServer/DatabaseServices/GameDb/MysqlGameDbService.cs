@@ -56,6 +56,26 @@ public class MysqlGameDbService : IGameDbService
         }
     }
 
+    public async Task<(ErrorCode, UserAccount? account)> GetUserAccount(string email)
+    {
+        try
+        {
+            var account = await _queryFactory.Query("user_accounts")
+                .Where(new { email = email })
+                .FirstAsync<UserAccount>();
+            if (account == null)
+            {
+                return (ErrorCode.NotExistEmail, null);
+            }
+            return (ErrorCode.None, account);
+        }
+        catch (Exception ex)
+        {
+            _logger.ZLogErrorWithPayload(ex, new { email = email }, "GetUserAccount EXCEPTION");
+            return (ErrorCode.GameDbError, null);
+        }
+    }
+
     // For RollBack
     public async Task<ErrorCode> DeleteUserAccount(Int64 userId)
     {

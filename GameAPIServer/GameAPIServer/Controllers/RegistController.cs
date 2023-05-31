@@ -46,6 +46,7 @@ public class RegistController : ControllerBase
             consecutive_login_count = 0,
             last_login_date = new DateTime(9999, 12, 31, 23, 59, 59)
         });
+        // TODO: 기능 추가에 따른, 기본데이터 추가 로직 실시.
         return response;
     }
 }

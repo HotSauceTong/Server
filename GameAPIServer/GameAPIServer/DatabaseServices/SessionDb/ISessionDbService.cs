@@ -1,6 +1,6 @@
 ﻿namespace GameAPIServer.DatabaseServices.SessionDb;
 
-public interface ISessionService
+public interface ISessionDbService
 {
     Task<ErrorCode> SetSession(SessionModel session);
     Task<(ErrorCode, SessionModel?)> GetSession(String email);
