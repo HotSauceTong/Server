@@ -3,6 +3,9 @@
     public enum ErrorCode : Int16
     {
         None = 0,
+        // Auth Error 10 ~ 49
+        InvalidToken = 10,
+        InvalidEmail = 11,
         // Db Error 50 ~ 99
         SessionError = 50,
         GameDbError = 51,

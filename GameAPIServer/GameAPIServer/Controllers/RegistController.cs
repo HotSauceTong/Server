@@ -40,7 +40,7 @@ public class RegistController : ControllerBase
         {
             return response;
         }
-        (response.errorCode, var userAttendenceKey) = await _gameDbService.InsertUserAttendence(new UserAttendence
+        (response.errorCode, var userAttendenceKey) = await _gameDbService.InsertUserAttendance(new UserAttendance
         {
             user_id = userAccountKey,
             consecutive_login_count = 0,

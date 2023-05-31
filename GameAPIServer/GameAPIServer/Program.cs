@@ -28,6 +28,7 @@ builder.Services.AddLogging(logging =>
 });
 builder.Services.AddTransient<IGameDbService, MysqlGameDbService>();
 builder.Services.AddSingleton<ISessionDbService, RedisSessionDbService>();
+builder.Services.AddScoped<SessionCheckAndGetFilter>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
