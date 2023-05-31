@@ -9,9 +9,9 @@ public class AuthCheckMiddleware
 {
     readonly RequestDelegate _next;
     readonly ILogger<AuthCheckMiddleware> _logger;
-    readonly ISessionService _session;
+    readonly ISessionDbService _session;
 
-    public AuthCheckMiddleware(RequestDelegate next, ISessionService sesion, ILogger<AuthCheckMiddleware> logger)
+    public AuthCheckMiddleware(RequestDelegate next, ISessionDbService sesion, ILogger<AuthCheckMiddleware> logger)
     {
         _next = next;
         _session = sesion;

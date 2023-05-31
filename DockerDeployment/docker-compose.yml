@@ -1,23 +1,23 @@
 version: '3'
 services:
-  hsst_api_server:
-    image: hsst_api_server_img:1.0.0
-    container_name: hsst_api_server_cont
-    networks: 
-      - hsst_web_net
-    ports: 
-      - '80:80'
-    depends_on:
-      - hsst_sessiondb
-      - hsst_rdb
-    healthcheck:
-      interval: 60s
-      retries: 3
-      start_period: 20s
-      timeout: 10s
-    volumes:
-      - ./api_server/logs:/app/logs
-      - ./api_server/appsettings.json:/app/appsettings.json
+  # hsst_api_server:
+  #   image: hsst_api_server_img:1.0.0
+  #   container_name: hsst_api_server_cont
+  #   networks: 
+  #     - hsst_web_net
+  #   ports: 
+  #     - '80:80'
+  #   depends_on:
+  #     - hsst_sessiondb
+  #     - hsst_rdb
+  #   healthcheck:
+  #     interval: 60s
+  #     retries: 3
+  #     start_period: 20s
+  #     timeout: 10s
+  #   volumes:
+  #     - ./api_server/logs:/app/logs
+  #     - ./api_server/appsettings.json:/app/appsettings.json
 
   hsst_rdb:
     image: mysql:8.0
@@ -39,8 +39,6 @@ services:
       - hsst_web_net
     ports:
       - '6379:6379'
-    volumes:
-      - ./redis/data:/data
 
 networks:
   hsst_web_net:

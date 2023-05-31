@@ -400,3 +400,11 @@ FodyWeavers.xsd
 # custom
 *settings.json
 *.tar
+DockerDeployment/mysql/data/
+DockerDeployment\mysql\data\
+DockerDeployment/redis/data/
+DockerDeployment\redis\data\
+DockerDeployment/redis/
+*.rdb
+*.rdb
+DockerDeployment/redis/data/dump.rdb
