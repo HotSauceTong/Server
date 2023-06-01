@@ -93,7 +93,7 @@ public class MysqlGameDbService : IGameDbService
         }
     }
 
-    public async Task<(ErrorCode, Int64 key)> InsertUserAttendence(UserAttendence userAttendence)
+    public async Task<(ErrorCode, Int64 key)> InsertUserAttendance(UserAttendance userAttendence)
     {
         try
         {
@@ -119,6 +119,46 @@ public class MysqlGameDbService : IGameDbService
         {
             _logger.ZLogErrorWithPayload(ex, new { userId = userAttendence.user_id }, "InsertUserAttendence EXCEPTION");
             return (ErrorCode.GameDbError, -1);
+        }
+
+    }
+    public async Task<(ErrorCode, UserAttendance? attendance)> GetUesrAttendence(Int64 userId)
+    {
+        try
+        {
+            var userAttendance = await _queryFactory.Query("user_attendences")
+                .Where("user_id", userId)
+                .FirstAsync<UserAttendance>();
+            if (userAttendance == null)
+            {
+                return (ErrorCode.GameDbError, null);
+            }
+            return (ErrorCode.None, userAttendance);
+        }
+        catch (Exception ex)
+        {
+            _logger.ZLogErrorWithPayload(ex, new { userId = userId }, "GetUserAttendence EXCEPTION");
+            return (ErrorCode.GameDbError, null);
+        }
+    }
+
+    public async Task<ErrorCode> UpdateUserAttendance(Int64 userId, UserAttendance userAttendence)
+    {
+        try
+        {
+            await _queryFactory.Query("user_attendences")
+                .Where("user_id", userId)
+                .UpdateAsync(new
+                {
+                    consecutive_login_count = userAttendence.consecutive_login_count,
+                    last_login_date = userAttendence.last_login_date
+                });
+            return ErrorCode.None;
+        }
+        catch (Exception ex)
+        {
+            _logger.ZLogErrorWithPayload(ex, new { userId = userId }, "UpdateUserAttendance EXCEPTION");
+            return ErrorCode.GameDbError;
         }
     }
 }

@@ -2,10 +2,10 @@
 
 namespace GameAPIServer.ReqResModels
 {
-    public class RequestBase
+    public class BaseRequest
     {
-        [Required] public String userEmail { get; set; }
+        [Required] public String email { get; set; }
         [Required] public String token { get; set; }
-        [Required] public String clientVersion { get; set; }
+        [Required] public String version { get; set; }
     }
 }
