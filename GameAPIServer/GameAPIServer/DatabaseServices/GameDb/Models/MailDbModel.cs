@@ -1,4 +1,4 @@
-﻿using GameAPIServer.ReqResModels;
+﻿using GameAPIServer.Controllers.ReqResModels;
 
 namespace GameAPIServer.DatabaseServices.GameDb.Models;
 

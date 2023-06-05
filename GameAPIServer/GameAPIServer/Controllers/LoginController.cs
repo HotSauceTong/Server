@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using GameAPIServer.Filter;
-using GameAPIServer.ReqResModels;
 using GameAPIServer.DatabaseServices.GameDb;
 using GameAPIServer.DatabaseServices.SessionDb;
 using GameAPIServer.Utils;
+using GameAPIServer.Controllers.ReqResModels;
 
 namespace GameAPIServer.Controllers
 {

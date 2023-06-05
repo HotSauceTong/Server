@@ -1,5 +1,5 @@
-﻿using GameAPIServer.DatabaseServices.GameDb.Models;
-using GameAPIServer.ReqResModels;
+﻿using GameAPIServer.Controllers.ReqResModels;
+using GameAPIServer.DatabaseServices.GameDb.Models;
 
 namespace GameAPIServer.DatabaseServices.GameDb;
 
