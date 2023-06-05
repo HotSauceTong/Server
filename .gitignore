@@ -408,3 +408,4 @@ DockerDeployment/redis/
 *.rdb
 *.rdb
 DockerDeployment/redis/data/dump.rdb
+GameAPIServer/GameAPIServer/MasterData/
