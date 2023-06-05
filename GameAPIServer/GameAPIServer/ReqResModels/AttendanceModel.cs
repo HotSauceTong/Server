@@ -6,6 +6,6 @@ public class AttendanceRequest : BaseRequest
 
 public class AttendanceResponse : BaseResponse
 {
-    public Int16 consecutiveLoginCount { get; set; }
+    public Int16 attendanceStack { get; set; }
     public DateTime lastLoginDate { get; set; }
 }

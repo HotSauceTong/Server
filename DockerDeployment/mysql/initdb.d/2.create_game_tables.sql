@@ -15,41 +15,32 @@ CREATE TABLE IF NOT EXISTS user_accounts
 CREATE TABLE IF NOT EXISTS user_attendences
 (
 	user_id BIGINT NOT NULL UNIQUE COMMENT '유저의 고유 넘버, Account db의 값과 일치',
-	consecutive_login_count INT NOT NULL DEFAULT 0 COMMENT '연속접속 횟수',
-	last_login_date DATETIME NOT NULL COMMENT '마지막 접속'
+	attendences_stack INT NOT NULL DEFAULT 0 COMMENT '연속접속 횟수',
+	last_login_date DATETIME NOT NULL COMMENT '마지막 접속',
+	reward_version CHAR(8) NOT NULL COMMENT '연속접속 보상 버전'
 );
 
--- CREATE TABLE IF NOT EXISTS user_items
--- (
--- 	item_id BIGINT PRIMARY KEY NOT NULL AUTO_INCREMENT COMMENT '아이템 코드',
--- 	user_id SMALLINT NOT NULL COMMENT '소유자',
--- 	item_code SMALLINT NOT NULL COMMENT '아이템 코드',
--- 	item_count BIGINT NOT NULL COMMENT '아이템 개수',
--- 	attack INT NOT NULL COMMENT '데미지',
--- 	defence INT NOT NULL COMMENT '방어력',
--- 	magic INT NOT NULL COMMENT '주문력',
--- 	enhance_count SMALLINT NOT NULL COMMENT '강화 횟수'
--- );
+CREATE TABLE IF NOT EXISTS user_collections
+(
+	collection_id BIGINT PRIMARY KEY NOT NULL AUTO_INCREMENT COMMENT '수집품 아이디',
+	user_id BIGINT NOT NULL COMMENT '소유자',
+	collection_code BIGINT NOT NULL COMMENT '수집품 코드',
+	collection_count INT NOT NULL COMMENT '수집품 개수'
+);
 
--- CREATE TABLE IF NOT EXISTS mailbox
--- (
--- 	mail_id BIGINT PRIMARY KEY NOT NULL AUTO_INCREMENT COMMENT '우편함 아이디',
--- 	user_id BIGINT NOT NULL COMMENT '유저 아이디',
--- 	item0_code INT DEFAULT -1 COMMENT '0번 아이템 종류',
--- 	item0_count INT DEFAULT -1 COMMENT '0번 아이템 개수',
--- 	item1_code INT DEFAULT -1 COMMENT '1번 아이템 코드',
--- 	item1_count INT DEFAULT -1 COMMENT '1번 아이템 개수',
--- 	item2_code INT DEFAULT -1 COMMENT '2번 아이템 코드',
--- 	item2_count INT DEFAULT -1 COMMENT '2번 아이템 개수',
--- 	item3_code INT DEFAULT -1 COMMENT '3번 아이템 코드',
--- 	item3_count INT DEFAULT -1 COMMENT '3번 아이템 개수',
--- 	mail_title TEXT NOT NULL COMMENT '우편 타이틀',
--- 	mail_text TEXT COMMENT '메세지',
--- 	read_date DATETIME NOT NULL DEFAULT '9999-12-31 23:59:59' COMMENT '읽은 날짜',
--- 	recieve_date DATETIME NOT NULL COMMENT '수령일',
--- 	expiration_date DATETIME NOT NULL DEFAULT '9999-12-31 23:59:59' COMMENT '만료일',
--- 	is_deleted TINYINT NOT NULL DEFAULT 0 COMMENT '삭제여부'
--- );
+CREATE TABLE IF NOT EXISTS mailbox
+(
+	mail_id BIGINT PRIMARY KEY NOT NULL AUTO_INCREMENT COMMENT '우편 아이디',
+	user_id BIGINT NOT NULL COMMENT '유저 아이디',
+	collection_code BIGINT DEFAULT -1 COMMENT '0번 아이템 종류',
+	collection_count INT DEFAULT -1 COMMENT '0번 아이템 개수',
+	mail_title TEXT NOT NULL COMMENT '우편 타이틀',
+	mail_body TEXT COMMENT '메세지',
+	read_date DATETIME NOT NULL DEFAULT '9999-12-31 23:59:59' COMMENT '읽은 날짜',
+	recieve_date DATETIME NOT NULL COMMENT '수령일',
+	expiration_date DATETIME NOT NULL DEFAULT '9999-12-31 23:59:59' COMMENT '만료일',
+	is_deleted TINYINT NOT NULL DEFAULT 0 COMMENT '삭제여부'
+);
 
 -- CREATE TABLE IF NOT EXISTS user_achievement
 -- (
