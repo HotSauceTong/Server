@@ -1,6 +1,7 @@
 ﻿namespace GameAPIServer.DatabaseServices.GameDb;
 
 using GameAPIServer.DatabaseServices.GameDb.Models;
+using GameAPIServer.ReqResModels;
 using MySqlConnector;
 using SqlKata.Compilers;
 using SqlKata.Execution;
@@ -160,5 +161,142 @@ public class MysqlGameDbService : IGameDbService
             _logger.ZLogErrorWithPayload(ex, new { userId = userId }, "UpdateUserAttendance EXCEPTION");
             return ErrorCode.GameDbError;
         }
+    }
+
+    public async Task<(ErrorCode, Int64 mailId)> SendMailToUser(Int64 userId, MailDbModel mail)
+    {
+        try
+        {
+            var mailId = await _queryFactory.Query("mailbox")
+                .InsertGetIdAsync<Int64>(mail);
+            return (ErrorCode.None, mailId);
+        }
+        catch (Exception ex)
+        {
+            _logger.ZLogErrorWithPayload(ex, new { userId = userId }, "SendMailToUser EXCEPTION");
+            return (ErrorCode.GameDbError, -1);
+        }
+    }
+
+    public async Task<(ErrorCode, List<MailDbModel>?)> GetUserMails(Int64 userId)
+    {
+        try
+        {
+            var mailLsit = await _queryFactory.Query("mailbox")
+                .Where("user_id", userId)
+                .Where("expiration_date", ">", DateTime.Now)
+                .Where("id_deleted", false)
+                .GetAsync<MailDbModel>();
+            if (mailLsit == null)
+            {
+                return (ErrorCode.GameDbError, null);
+            }
+            return (ErrorCode.None, mailLsit.ToList());
+        }
+        catch (Exception ex)
+        {
+            _logger.ZLogErrorWithPayload(ex, new { userId = userId }, "GetUserMails EXCEPTION");
+            return (ErrorCode.GameDbError, null);
+        }
+    }
+
+
+
+    public async Task<(ErrorCode, MailDbModel?)> GetUserMail(Int64 userId, Int64 mailId)
+    {
+        try
+        {
+            var mail = await _queryFactory.Query("mailbox")
+                .Where("user_id", userId)
+                .Where("mail_id", mailId)
+                .Where("id_deleted", false)
+                .FirstAsync<MailDbModel>();
+            if (mail == null)
+            {
+                return (ErrorCode.NotExistEmail, null);
+            }
+            else if (mail.expiration_date > DateTime.Now)
+            {
+                return (ErrorCode.ExpiredEmail, null);
+            }
+            return (ErrorCode.None, mail);
+        }
+        catch (Exception ex)
+        {
+            _logger.ZLogErrorWithPayload(ex, new { userId = userId, mailId = mailId }, "GetUserMails EXCEPTION");
+            return (ErrorCode.GameDbError, null);
+        }
+    }
+    public async Task<ErrorCode> ReadUserMails(Int64 userId, Int64 mailId, DateTime dateTime)
+    {
+        try
+        {
+            await _queryFactory.Query("mailbox")
+                .Where("user_id", userId)
+                .Where("mail_id", mailId)
+                .Where("id_deleted", false)
+                .UpdateAsync(new
+                {
+                    read_date = dateTime
+                });
+            return ErrorCode.None;
+        }
+        catch (Exception ex)
+        {
+            _logger.ZLogErrorWithPayload(ex, new { userId = userId, mailId = mailId }, "GetUserMails EXCEPTION");
+            return ErrorCode.GameDbError;
+        }
+    }
+
+    public async Task<ErrorCode> UpdateUserMailCollection(Int64 userId, Int64 mailId, CollectionBundle? collection)
+    {
+        try
+        {
+            Int64 collectionCode = collection == null ? -1 : collection.collectionCode;
+            Int32 collectionCount = collection == null ? -1 : collection.collectionCount;
+            await _queryFactory.Query("mailbox")
+                .Where("user_id", userId)
+                .Where("mail_id", mailId)
+                .Where("id_deleted", false)
+                .UpdateAsync(new
+                {
+                    collection_code = collectionCode,
+                    collection_count = collectionCount
+                });
+            return ErrorCode.None;
+        }
+        catch (Exception ex)
+        {
+            _logger.ZLogErrorWithPayload(ex, new { userId = userId, mailId = mailId }, "UpdateUserMailCollection EXCEPTION");
+            return ErrorCode.GameDbError;
+        }
+    }
+
+    public async Task<ErrorCode> GiveCollectionsToUser(Int64 userId, List<CollectionBundle> collections)
+    {
+        try
+        {
+            await _queryFactory.StatementAsync(CollectionsInsertQuery("user_collections", userId, collections));
+            return ErrorCode.None;
+        }
+        catch (Exception ex)
+        {
+            _logger.ZLogErrorWithPayload(ex, new { userId = userId, collections = collections }, "GiveCollectionsToUser EXCEPTION");
+            return ErrorCode.GameDbError;
+        }
+    }
+
+    String CollectionsInsertQuery(String tableName, Int64 userId, List<CollectionBundle> collections)
+    {
+        String Query = "INSERT INTO " + tableName + " (user_id, collection_code, collection_count) VALUES ";
+        for (int i = 0; i < collections.Count; i++)
+        {
+            Query += "(" + userId + ", " + collections[i].collectionCode + ", " + collections[i].collectionCount + ")";
+            if (i != collections.Count - 1)
+            {
+                Query += ", ";
+            }
+        }
+        return Query;
     }
 }

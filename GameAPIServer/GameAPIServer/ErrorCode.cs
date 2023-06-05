@@ -25,5 +25,9 @@
         NotExistEmail = 301,
         WrongPassword = 302,
         ExpiredSession = 303,
+
+        //Mail Error 400 ~ 499
+        NotExistMail = 401,
+        ExpiredEmail = 402,                           
     }
 }

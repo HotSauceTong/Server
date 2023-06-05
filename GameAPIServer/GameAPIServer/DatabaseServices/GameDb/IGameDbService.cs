@@ -1,4 +1,5 @@
 ﻿using GameAPIServer.DatabaseServices.GameDb.Models;
+using GameAPIServer.ReqResModels;
 
 namespace GameAPIServer.DatabaseServices.GameDb;
 
@@ -10,4 +11,10 @@ public interface IGameDbService
     Task<(ErrorCode, UserAttendance? attendance)> GetUesrAttendence(Int64 userId);
     Task<ErrorCode> UpdateUserAttendance(Int64 userId, UserAttendance userAttendence);
     Task<ErrorCode> DeleteUserAccount(Int64 userId);
+    Task<(ErrorCode, Int64 mailId)> SendMailToUser(Int64 userId, MailDbModel mail);
+    Task<(ErrorCode, List<MailDbModel>?)> GetUserMails(Int64 userId);
+    Task<(ErrorCode, MailDbModel?)> GetUserMail(Int64 userId, Int64 mailId);
+    Task<ErrorCode> ReadUserMails(Int64 userId, Int64 mailId, DateTime dateTime);
+    Task<ErrorCode> UpdateUserMailCollection(Int64 userId, Int64 mailId, CollectionBundle? collections);
+    Task<ErrorCode> GiveCollectionsToUser(Int64 userId, List<CollectionBundle> collections);
 }
