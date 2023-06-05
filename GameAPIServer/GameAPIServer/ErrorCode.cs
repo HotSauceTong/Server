@@ -28,6 +28,9 @@
 
         //Mail Error 400 ~ 499
         NotExistMail = 401,
-        ExpiredEmail = 402,                           
+        ExpiredEmail = 402,
+        
+        //Attendance Error 500 ~ 599
+        AlreadyAttendance = 501,
     }
 }

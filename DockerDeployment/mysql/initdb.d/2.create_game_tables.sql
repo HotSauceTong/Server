@@ -15,8 +15,9 @@ CREATE TABLE IF NOT EXISTS user_accounts
 CREATE TABLE IF NOT EXISTS user_attendences
 (
 	user_id BIGINT NOT NULL UNIQUE COMMENT '유저의 고유 넘버, Account db의 값과 일치',
-	consecutive_login_count INT NOT NULL DEFAULT 0 COMMENT '연속접속 횟수',
-	last_login_date DATETIME NOT NULL COMMENT '마지막 접속'
+	attendences_stack INT NOT NULL DEFAULT 0 COMMENT '연속접속 횟수',
+	last_login_date DATETIME NOT NULL COMMENT '마지막 접속',
+	reward_version CHAR(8) NOT NULL COMMENT '연속접속 보상 버전'
 );
 
 CREATE TABLE IF NOT EXISTS user_collections
@@ -24,7 +25,7 @@ CREATE TABLE IF NOT EXISTS user_collections
 	collection_id BIGINT PRIMARY KEY NOT NULL AUTO_INCREMENT COMMENT '수집품 아이디',
 	user_id BIGINT NOT NULL COMMENT '소유자',
 	collection_code BIGINT NOT NULL COMMENT '수집품 코드',
-	collection_count INT NOT NULL COMMENT '수집품 개수',
+	collection_count INT NOT NULL COMMENT '수집품 개수'
 );
 
 CREATE TABLE IF NOT EXISTS mailbox

@@ -101,8 +101,9 @@ public class MysqlGameDbService : IGameDbService
             var key = await _queryFactory.Query("user_attendences").InsertGetIdAsync<Int64>(new
             {
                 user_id = userAttendence.user_id,
-                consecutive_login_count = userAttendence.consecutive_login_count,
-                last_login_date = userAttendence.last_login_date
+                attendences_stack = userAttendence.attendences_stack,
+                last_login_date = userAttendence.last_login_date,
+                reward_version = userAttendence.reward_version
             });
             return (ErrorCode.None, key);
         }
@@ -151,8 +152,9 @@ public class MysqlGameDbService : IGameDbService
                 .Where("user_id", userId)
                 .UpdateAsync(new
                 {
-                    consecutive_login_count = userAttendence.consecutive_login_count,
-                    last_login_date = userAttendence.last_login_date
+                    attendences_stack = userAttendence.attendences_stack,
+                    last_login_date = userAttendence.last_login_date,
+                    reward_version = userAttendence.reward_version
                 });
             return ErrorCode.None;
         }

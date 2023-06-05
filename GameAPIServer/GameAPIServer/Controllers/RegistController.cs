@@ -43,8 +43,9 @@ public class RegistController : ControllerBase
         (response.errorCode, var userAttendenceKey) = await _gameDbService.InsertUserAttendance(new UserAttendance
         {
             user_id = userAccountKey,
-            consecutive_login_count = 0,
-            last_login_date = new DateTime(1000, 1, 1, 0, 0, 0)
+            attendences_stack = 0,
+            last_login_date = new DateTime(1000, 1, 1, 0, 0, 0),
+            reward_version = ""
         });
         // TODO: 기능 추가에 따른, 기본데이터 추가 로직 실시.
         return response;
