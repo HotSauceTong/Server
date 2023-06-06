@@ -1,7 +1,7 @@
 ﻿namespace GameAPIServer.DatabaseServices.GameDb;
 
+using GameAPIServer.Controllers.ReqResModels;
 using GameAPIServer.DatabaseServices.GameDb.Models;
-using GameAPIServer.ReqResModels;
 using MySqlConnector;
 using SqlKata.Compilers;
 using SqlKata.Execution;

@@ -1,4 +1,4 @@
-﻿namespace GameAPIServer.ReqResModels;
+﻿namespace GameAPIServer.Controllers.ReqResModels;
 
 public class AttendanceRequest : BaseRequest
 {

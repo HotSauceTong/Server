@@ -1,15 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace GameAPIServer.ReqResModels;
+namespace GameAPIServer.Controllers.ReqResModels;
 
-public class LoginRequest
+public class RegisteRequest
 {
     [Required] public string email { get; set; }
+    [Required] public string nickname { get; set; }
     [Required] public string password { get; set; }
     [Required] public string version { get; set; }
 }
 
-public class LoginResponse : BaseResponse
+public class RegistResponse : BaseResponse
 {
-    public string token { get; set; }
 }

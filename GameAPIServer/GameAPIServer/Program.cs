@@ -3,6 +3,7 @@ using GameAPIServer.DatabaseServices.GameDb;
 using GameAPIServer.DatabaseServices.SessionDb;
 using GameAPIServer.Filter;
 using GameAPIServer.MiddleWare;
+using GameAPIServer.Service;
 using ZLogger;
 
 // delay for DB containers
@@ -29,13 +30,18 @@ builder.Services.AddLogging(logging =>
 builder.Services.AddTransient<IGameDbService, MysqlGameDbService>();
 builder.Services.AddSingleton<ISessionDbService, RedisSessionDbService>();
 builder.Services.AddScoped<SessionCheckAndGetFilter>();
+builder.Services.AddSingleton<IMasterDataOffer, MasterDataOffer>();
 builder.Services.AddHttpContextAccessor();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 
 app.UseAuthorization();
-
+var masterDataOffer = app.Services.GetRequiredService<IMasterDataOffer>();
+if (masterDataOffer.LoadMasterDatas() == false)
+{
+    Environment.Exit(-1);
+}
 app.MapControllers();
 app.UseMiddleware<BodyParsingMiddleware>();
 app.Run();

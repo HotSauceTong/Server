@@ -1,8 +1,8 @@
-﻿using GameAPIServer.DatabaseServices.GameDb;
+﻿using GameAPIServer.Controllers.ReqResModels;
+using GameAPIServer.DatabaseServices.GameDb;
 using GameAPIServer.DatabaseServices.GameDb.Models;
 using GameAPIServer.DatabaseServices.SessionDb;
 using GameAPIServer.Filter;
-using GameAPIServer.ReqResModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ZLogger;
