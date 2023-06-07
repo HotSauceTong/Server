@@ -202,8 +202,6 @@ public class MysqlGameDbService : IGameDbService
         }
     }
 
-
-
     public async Task<(ErrorCode, MailDbModel?)> GetUserMail(Int64 userId, Int64 mailId)
     {
         try
@@ -284,6 +282,23 @@ public class MysqlGameDbService : IGameDbService
         catch (Exception ex)
         {
             _logger.ZLogErrorWithPayload(ex, new { userId = userId, collections = collections }, "GiveCollectionsToUser EXCEPTION");
+            return ErrorCode.GameDbError;
+        }
+    }
+
+    public async Task<ErrorCode> DeleteAllRecvedMails(Int64 userId)
+    {
+        try
+        {
+            await _queryFactory.Query("mailbox")
+                .Where("user_id", userId)
+                .Where(q => q.Where("collection_code", -1).OrWhere("collection_count", -1))
+                .UpdateAsync(new { is_deleted = true });
+            return ErrorCode.None;
+        }
+        catch (Exception ex)
+        {
+            _logger.ZLogErrorWithPayload(ex, new { userId = userId }, "DeleteAllRecvedMails EXCEPTION");
             return ErrorCode.GameDbError;
         }
     }

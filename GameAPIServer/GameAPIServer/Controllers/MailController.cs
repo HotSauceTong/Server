@@ -112,6 +112,33 @@ public class MailController : ControllerBase
         return response;
     }
 
+    [HttpPost("DeleteAllRecvedMails")]
+    public async Task<DeleteAllRecvedMailsResponse> RecvedMailsDelete(DeleteAllRecvedMailsRequest request)
+    {
+        var session = (SessionModel?)HttpContext.Items["Session"];
+        DeleteAllRecvedMailsResponse response = new DeleteAllRecvedMailsResponse();
+        
+        response.errorCode = await _gameDbService.DeleteAllRecvedMails(session.userId);
+        if (response.errorCode != ErrorCode.None)
+        {
+            return response;
+        }
+
+        (response.errorCode, var mailList) = await _gameDbService.GetUserMails(session.userId);
+        if (response.errorCode != ErrorCode.None)
+        {
+            return response;
+        }
+        else if (mailList == null)
+        {
+            response.errorCode = ErrorCode.GameDbError;
+            return response;
+        }
+
+        response.mailList = GenerateMailListElement(mailList);
+        return response;
+    }
+
     List<MailListElement> GenerateMailListElement(List<MailDbModel> mailModelList)
     {
         var mailListResponse = new List<MailListElement>();
