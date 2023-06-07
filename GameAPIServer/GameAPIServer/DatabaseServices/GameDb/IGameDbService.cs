@@ -18,4 +18,7 @@ public interface IGameDbService
     Task<ErrorCode> UpdateUserMailCollection(Int64 userId, Int64 mailId, CollectionBundle? collections);
     Task<ErrorCode> GiveCollectionsToUser(Int64 userId, List<CollectionBundle> collections);
     Task<ErrorCode> DeleteAllRecvedMails(Int64 userId);
+    Task<(ErrorCode, List<CollectionBundle>?)> GetAllUserCollectionList(Int64 userId);
+    Task<(ErrorCode, List<CollectionBundle>?)> GetUserCurrencyList(Int64 userId);
+    Task<(ErrorCode, List<CollectionBundle>?)> GetUserCardList(Int64 userId);
 }

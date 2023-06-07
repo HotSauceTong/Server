@@ -93,7 +93,8 @@ namespace GameAPIServer.Controllers
             {
                 if (userAttendance.attendences_stack < _masterDataOffer.GetAttendenceMaxCount())
                 {
-                    userAttendance.attendences_stack++;
+                    //userAttendance.attendences_stack++;
+                    userAttendance.attendences_stack = 1; // for test
                 }
                 else
                 {
