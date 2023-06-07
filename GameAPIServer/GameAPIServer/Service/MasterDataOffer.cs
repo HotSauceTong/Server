@@ -28,11 +28,21 @@ public class MasterDataOffer : IMasterDataOffer
         {
             return null;
         }
-        else if (_attendanceRewards.rewards.Count() < stack - 1)
+        else if (_attendanceRewards.rewards.Count >= stack)
         {
             return _attendanceRewards.rewards[stack - 1];
         }
         return null;
+    }
+
+    public String GetAttendanceRewardVersion()
+    {
+        return _attendanceRewards.version;
+    }
+
+    public Int32 GetAttendenceMaxCount()
+    {
+        return _attendanceRewards.rewards.Count;
     }
 
     public CollectionDefine? GetCollectionDefine(Int64 collectionId)

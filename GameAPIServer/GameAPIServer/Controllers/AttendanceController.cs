@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using GameAPIServer.DatabaseServices.SessionDb;
 using GameAPIServer.DatabaseServices.GameDb.Models;
 using GameAPIServer.Controllers.ReqResModels;
+using GameAPIServer.Service;
 
 namespace GameAPIServer.Controllers
 {
@@ -16,10 +17,12 @@ namespace GameAPIServer.Controllers
     {
         readonly ILogger<AttendanceController> _logger;
         readonly IGameDbService _gameDbService;
-        public AttendanceController(IHttpContextAccessor httpContextAccessor, ILogger<AttendanceController> logger, IGameDbService gameDbService)
+        readonly IMasterDataOffer _masterDataOffer;
+        public AttendanceController(IMasterDataOffer masterDataOffer, ILogger<AttendanceController> logger, IGameDbService gameDbService)
         {
             _logger = logger;
             _gameDbService = gameDbService;
+            _masterDataOffer = masterDataOffer;
         }
 
         public async Task<AttendanceResponse> Attendance(AttendanceRequest request) 
@@ -31,51 +34,80 @@ namespace GameAPIServer.Controllers
             {
                 return response;
             }
-            var lastLoginDate = userAttendance.last_login_date;
-            response.errorCode = renewalAttendance(userAttendance);
-            if (response.errorCode == ErrorCode.None)
+
+            UserAttendance oldUserAttendance = userAttendance;
+            var attendanceRenewalErrorCode = renewalAttendance(userAttendance);
+            response.errorCode = await _gameDbService.UpdateUserAttendance(session.userId, oldUserAttendance);
+            if (response.errorCode != ErrorCode.None)
             {
-                response.errorCode = await _gameDbService.UpdateUserAttendance(session.userId, userAttendance);
+                return response;
+            }
+
+            if (attendanceRenewalErrorCode == ErrorCode.None)
+            {
+                var rewardBundle = _masterDataOffer.GetAttendanceReward(userAttendance.attendences_stack);
+                if (rewardBundle == null)
+                {
+                    response.errorCode = await _gameDbService.UpdateUserAttendance(session.userId, oldUserAttendance);
+                    response.errorCode = ErrorCode.MasterDataError;
+                    return response;
+                }
+
+                (response.errorCode, var mailID) = await _gameDbService.SendMailToUser(session.userId,
+                    new MailDbModel {
+                        user_id = session.userId,
+                        collection_code = rewardBundle.collectionCode,
+                        collection_count = rewardBundle.collectionCount,
+                        mail_title = $"{userAttendance.attendences_stack}일 차 로그인 보상 입니다.",
+                        mail_body = $"{userAttendance.attendences_stack}일 차 로그인 보상!",
+                        sender = "SYSTEM",
+                        recieve_date = DateTime.Now,
+                        expiration_date = DateTime.Now.AddDays(15) // TODO: appsetting같은데 넣기?
+                        }
+                    );
                 if (response.errorCode != ErrorCode.None)
                 {
+                    response.errorCode = await _gameDbService.UpdateUserAttendance(session.userId, userAttendance);
                     return response;
                 }
             }
+            response.errorCode = attendanceRenewalErrorCode;
             response.attendanceStack = userAttendance.attendences_stack;
-            response.lastLoginDate = lastLoginDate;
+            response.lastLoginDate = oldUserAttendance.last_login_date;
             return response;
         }
 
         // c#에서 클래스, 배열등을 전달하면 Call by reference로 전달된다.
         ErrorCode renewalAttendance(UserAttendance userAttendance)
         {
+            ErrorCode rt = ErrorCode.None;
             // 버전이 바뀐 경우
-            if (userAttendance.reward_version.Equals("20230605") == false) // TODO: 마스터 데이터 확립시 변경
+            if (userAttendance.reward_version.Equals(_masterDataOffer.GetAttendanceRewardVersion()) == false) // TODO: 마스터 데이터 확립시 변경
             {
                 userAttendance.attendences_stack = 1;
-                userAttendance.last_login_date = DateTime.Now;
-                userAttendance.reward_version = "20230605";
-            }
-            // 하루 걸른 경우
-            //if (userAttendance.last_login_date < DateTime.Today.AddDays(-1).AddHours(6))
-            else if (userAttendance.last_login_date < DateTime.Now.AddMinutes(-2)) // for test
-            {
-                userAttendance.attendences_stack = 1;
-                userAttendance.last_login_date = DateTime.Now;
+                userAttendance.reward_version = _masterDataOffer.GetAttendanceRewardVersion();
             }
             // 어제 출석하고 오늘은 출석 안한 경우
             //else if (userAttendance.last_login_date < DateTime.Today.AddHours(6))
-            else if (userAttendance.last_login_date < DateTime.Now.AddMinutes(-1)) // for test
+            else if (userAttendance.last_login_date.Minute != DateTime.Now.Minute) // for test
             {
-                userAttendance.attendences_stack++;
-                userAttendance.last_login_date = DateTime.Now;
+                if (userAttendance.attendences_stack < _masterDataOffer.GetAttendenceMaxCount())
+                {
+                    userAttendance.attendences_stack++;
+                }
+                else
+                {
+                    rt = ErrorCode.MaxRewardStackReached;
+                }
             }
             else
             {
-                userAttendance.last_login_date = DateTime.Now;
-                return ErrorCode.AlreadyAttendance;
+                rt = ErrorCode.AlreadyAttendance;
             }
-            return ErrorCode.None;
+            userAttendance.last_login_date = DateTime.Now;
+            return rt;
         }
+
+        
     }
 }
