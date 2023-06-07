@@ -17,4 +17,5 @@ public interface IGameDbService
     Task<ErrorCode> ReadUserMails(Int64 userId, Int64 mailId, DateTime dateTime);
     Task<ErrorCode> UpdateUserMailCollection(Int64 userId, Int64 mailId, CollectionBundle? collections);
     Task<ErrorCode> GiveCollectionsToUser(Int64 userId, List<CollectionBundle> collections);
+    Task<ErrorCode> DeleteAllRecvedMails(Int64 userId);
 }

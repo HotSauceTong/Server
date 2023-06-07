@@ -45,6 +45,10 @@ public class MailItemReceiveRequest : BaseRequest
     public Int64 mailId { get; set; }
 }
 
+public class DeleteAllRecvedMailsRequest : BaseRequest
+{
+}
+
 public class MailListResponse : BaseResponse
 {
     public List<MailListElement>? mailList { get; set; }
@@ -58,4 +62,9 @@ public class MailReadResponse : BaseResponse
 public class MailItemReceiveResponse : BaseResponse
 {
     public CollectionBundle collectionBundle { get; set; }
+}
+
+public class DeleteAllRecvedMailsResponse : BaseResponse
+{
+    public List<MailListElement>? mailList { get; set; }
 }
