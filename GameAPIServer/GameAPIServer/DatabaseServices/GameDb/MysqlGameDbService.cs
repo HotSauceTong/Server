@@ -63,7 +63,7 @@ public class MysqlGameDbService : IGameDbService
         {
             var account = await _queryFactory.Query("user_accounts")
                 .Where(new { email = email })
-                .FirstAsync<UserAccount>();
+                .FirstOrDefaultAsync<UserAccount>();
             if (account == null)
             {
                 return (ErrorCode.NotExistEmail, null);
@@ -130,7 +130,7 @@ public class MysqlGameDbService : IGameDbService
         {
             var userAttendance = await _queryFactory.Query("user_attendences")
                 .Where("user_id", userId)
-                .FirstAsync<UserAttendance>();
+                .FirstOrDefaultAsync<UserAttendance>();
             if (userAttendance == null)
             {
                 return (ErrorCode.GameDbError, null);
@@ -187,7 +187,7 @@ public class MysqlGameDbService : IGameDbService
             var mailLsit = await _queryFactory.Query("mailbox")
                 .Where("user_id", userId)
                 .Where("expiration_date", ">", DateTime.Now)
-                .Where("id_deleted", false)
+                .Where("is_deleted", false)
                 .GetAsync<MailDbModel>();
             if (mailLsit == null)
             {
@@ -211,13 +211,13 @@ public class MysqlGameDbService : IGameDbService
             var mail = await _queryFactory.Query("mailbox")
                 .Where("user_id", userId)
                 .Where("mail_id", mailId)
-                .Where("id_deleted", false)
-                .FirstAsync<MailDbModel>();
+                .Where("is_deleted", false)
+                .FirstOrDefaultAsync<MailDbModel>();
             if (mail == null)
             {
                 return (ErrorCode.NotExistEmail, null);
             }
-            else if (mail.expiration_date > DateTime.Now)
+            else if (mail.expiration_date < DateTime.Now)
             {
                 return (ErrorCode.ExpiredEmail, null);
             }
@@ -236,7 +236,7 @@ public class MysqlGameDbService : IGameDbService
             await _queryFactory.Query("mailbox")
                 .Where("user_id", userId)
                 .Where("mail_id", mailId)
-                .Where("id_deleted", false)
+                .Where("is_deleted", false)
                 .UpdateAsync(new
                 {
                     read_date = dateTime
@@ -259,7 +259,7 @@ public class MysqlGameDbService : IGameDbService
             await _queryFactory.Query("mailbox")
                 .Where("user_id", userId)
                 .Where("mail_id", mailId)
-                .Where("id_deleted", false)
+                .Where("is_deleted", false)
                 .UpdateAsync(new
                 {
                     collection_code = collectionCode,

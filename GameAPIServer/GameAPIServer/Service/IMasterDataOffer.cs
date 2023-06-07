@@ -7,6 +7,9 @@ namespace GameAPIServer.Service
     {
         bool LoadMasterDatas();
         CollectionBundle? GetAttendanceReward(Int32 stack);
+        String GetAttendanceRewardVersion();
+        Int32 GetAttendenceMaxCount();
+
         CollectionDefine? GetCollectionDefine(Int64 collectionId);
     }
 }

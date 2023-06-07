@@ -9,6 +9,7 @@
         // Db Error 50 ~ 99
         SessionError = 50,
         GameDbError = 51,
+        MasterDataError = 52,
 
         // request format Error 100 ~ 199
         InvalidRequestFormat = 100,
@@ -32,5 +33,6 @@
         
         //Attendance Error 500 ~ 599
         AlreadyAttendance = 501,
+        MaxRewardStackReached = 502,
     }
 }

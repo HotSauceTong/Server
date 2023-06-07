@@ -25,7 +25,8 @@ public class MailController : ControllerBase
     }
 
     // 메일 리스트 받기
-    public async Task<MailListResponse> mailList(MailListRequest request)
+    [HttpPost("MailList")]
+    public async Task<MailListResponse> MailList(MailListRequest request)
     {
         var session = (SessionModel?)HttpContext.Items["Session"];
         var response = new MailListResponse();
@@ -44,6 +45,7 @@ public class MailController : ControllerBase
         return response;
     }
     // 특정 메일 읽기
+    [HttpPost("MailRead")]
     public async Task<MailReadResponse> MailRead(MailReadRequest request)
     {
         var session = (SessionModel?)HttpContext.Items["Session"];
@@ -72,6 +74,7 @@ public class MailController : ControllerBase
             collectionCount = mailDbModel.collection_count,
             mailTitle = mailDbModel.mail_title,
             mailBody = mailDbModel.mail_body,
+            sender = mailDbModel.sender,
             readDate = now,
             receiveDate = mailDbModel.recieve_date,
             expirationDate = mailDbModel.expiration_date
@@ -80,6 +83,7 @@ public class MailController : ControllerBase
     }
 
     // 특정 메일 아이템 받기
+    [HttpPost("MailItemReceive")]
     public async Task<MailItemReceiveResponse> MailItemReceive(MailItemReceiveRequest request)
     {
         var session = (SessionModel?)HttpContext.Items["Session"];
@@ -119,6 +123,7 @@ public class MailController : ControllerBase
                 collectionCode = mailElem.collection_code,
                 collectionCount = mailElem.collection_count,
                 mailTitle = mailElem.mail_title,
+                sender = mailElem.sender,
                 readDate = mailElem.read_date,
                 expirationDate = mailElem.expiration_date
             });
