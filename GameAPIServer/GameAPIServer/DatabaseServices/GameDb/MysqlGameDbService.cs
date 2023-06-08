@@ -303,6 +303,83 @@ public class MysqlGameDbService : IGameDbService
         }
     }
 
+    public async Task<(ErrorCode, List<CollectionBundle>?)> GetAllUserCollectionList(Int64 userId)
+    {
+        try
+        {
+            List<CollectionBundle>? collectionBundles = null;
+            var collections = await _queryFactory.Query("user_collections")
+                .Where("user_id", userId)
+                .GetAsync<UserCollection>();
+            if (collections.Count() != 0)
+            {
+                collectionBundles = new List<CollectionBundle>();
+            }
+            foreach (var collecElem in collections)
+            {
+                collectionBundles.Add(collecElem.GetCollectionBundle());
+            }
+            return (ErrorCode.None, collectionBundles);
+        }
+        catch (Exception ex)
+        {
+            _logger.ZLogErrorWithPayload(ex, new { userId = userId }, "GetAllUserCollectionList EXCEPTION");
+            return (ErrorCode.GameDbError, null);
+        }
+    }
+
+    public async Task<(ErrorCode, List<CollectionBundle>?)> GetUserCurrencyList(Int64 userId)
+    {
+        try
+        {
+            List<CollectionBundle>? currencyBundles = null;
+            var collections = await _queryFactory.Query("user_collections")
+                .Where("user_id", userId)
+                .Where(q => q.Where("collection_code", 0).OrWhere("collection_code", 1))
+                .GetAsync<UserCollection>();
+            if (collections.Count() != 0)
+            {
+                currencyBundles = new List<CollectionBundle>();
+            }
+            foreach (var collecElem in collections)
+            {
+                currencyBundles.Add(collecElem.GetCollectionBundle());
+            }
+            return (ErrorCode.None, currencyBundles);
+        }
+        catch (Exception ex)
+        {
+            _logger.ZLogErrorWithPayload(ex, new { userId = userId }, "GetUserCurrencyList EXCEPTION");
+            return (ErrorCode.GameDbError, null);
+        }
+    }
+
+    public async Task<(ErrorCode, List<CollectionBundle>?)> GetUserCardList(Int64 userId)
+    {
+        try
+        {
+            List<CollectionBundle>? cardBundles = null;
+            var collections = await _queryFactory.Query("user_collections")
+                .Where("user_id", userId)
+                .WhereNot(q => q.Where("collection_code", 0).OrWhere("collection_code", 1))
+                .GetAsync<UserCollection>();
+            if (collections.Count() != 0)
+            {
+                cardBundles = new List<CollectionBundle>();
+            }
+            foreach (var collecElem in collections)
+            {
+                cardBundles.Add(collecElem.GetCollectionBundle());
+            }
+            return (ErrorCode.None, cardBundles);
+        }
+        catch (Exception ex)
+        {
+            _logger.ZLogErrorWithPayload(ex, new { userId = userId }, "GetUserCardList EXCEPTION");
+            return (ErrorCode.GameDbError, null);
+        }
+    }
+
     String CollectionsInsertQuery(String tableName, Int64 userId, List<CollectionBundle> collections)
     {
         String Query = "INSERT INTO " + tableName + " (user_id, collection_code, collection_count) VALUES ";
