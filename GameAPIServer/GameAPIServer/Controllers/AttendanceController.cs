@@ -88,23 +88,20 @@ namespace GameAPIServer.Controllers
                 userAttendance.reward_version = _masterDataOffer.GetAttendanceRewardVersion();
             }
             // 어제 출석하고 오늘은 출석 안한 경우
-            //else if (userAttendance.last_login_date < DateTime.Today.AddHours(6))
-            else if (userAttendance.last_login_date.Minute != DateTime.Now.Minute) // for test
+            //else if (userAttendance.last_login_date < DateTime.Today.AddHours(6))// for test
+            if (userAttendance.attendences_stack < _masterDataOffer.GetAttendenceMaxCount())
             {
-                if (userAttendance.attendences_stack < _masterDataOffer.GetAttendenceMaxCount())
-                {
-                    //userAttendance.attendences_stack++;
-                    userAttendance.attendences_stack = 1; // for test
-                }
-                else
-                {
-                    rt = ErrorCode.MaxRewardStackReached;
-                }
+                userAttendance.attendences_stack++;
             }
             else
             {
-                rt = ErrorCode.AlreadyAttendance;
+                userAttendance.attendences_stack = 1; // for test
+                //rt = ErrorCode.MaxRewardStackReached;//for test
             }
+            //else //for test
+            //{
+            //    rt = ErrorCode.AlreadyAttendance;
+            //}
             userAttendance.last_login_date = DateTime.Now;
             return rt;
         }
