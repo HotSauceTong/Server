@@ -89,7 +89,7 @@ namespace GameAPIServer.Controllers
             }
             // 어제 출석하고 오늘은 출석 안한 경우
             //else if (userAttendance.last_login_date < DateTime.Today.AddHours(6))// for test
-            if (userAttendance.attendences_stack < _masterDataOffer.GetAttendenceMaxCount())
+            else if (userAttendance.attendences_stack < _masterDataOffer.GetAttendenceMaxCount())
             {
                 userAttendance.attendences_stack++;
             }

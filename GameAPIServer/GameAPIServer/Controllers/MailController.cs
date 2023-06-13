@@ -94,6 +94,11 @@ public class MailController : ControllerBase
         {
             return response;
         }
+        if (mailModel.collection_code == -1 || mailModel.collection_count == -1)
+        {
+            response.errorCode = ErrorCode.EmptyMailCollection;
+            return response;
+        }
         
         // 메일에 아이템 삭제하기
         response.errorCode = await _gameDbService.UpdateUserMailCollection(session.userId, request.mailId, null);
@@ -102,7 +107,8 @@ public class MailController : ControllerBase
             return response;
         }
         // 아이템 지급하기
-        response.errorCode = await _gameDbService.GiveCollectionsToUser(session.userId, new List<CollectionBundle>() { mailModel.GetCollectionBundle() });
+
+        response.errorCode = await _gameDbService.GiveCollectionsToUser(session.userId, mailModel.GetCollectionBundle());
         if (response.errorCode != ErrorCode.None)
         {
             await _gameDbService.UpdateUserMailCollection(session.userId, request.mailId, mailModel.GetCollectionBundle());

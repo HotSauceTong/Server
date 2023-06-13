@@ -217,7 +217,7 @@ public class MysqlGameDbService : IGameDbService
             }
             else if (mail.expiration_date < DateTime.Now)
             {
-                return (ErrorCode.ExpiredEmail, null);
+                return (ErrorCode.ExpiredMail, null);
             }
             return (ErrorCode.None, mail);
         }
@@ -272,12 +272,33 @@ public class MysqlGameDbService : IGameDbService
         }
     }
 
-    public async Task<ErrorCode> GiveCollectionsToUser(Int64 userId, List<CollectionBundle> collections)
+    public async Task<ErrorCode> GiveCollectionsToUser(Int64 userId, CollectionBundle collections)
     {
         try
         {
-            await _queryFactory.StatementAsync(CollectionsInsertQuery("user_collections", userId, collections));
+            var affectedRowNum = await _queryFactory.StatementAsync(CollectionCountAccumulate("user_collections", userId, collections));
+            // 쿼리가 없는 경우
+            if (affectedRowNum == 0)
+            {
+                await _queryFactory.Query("user_collections")
+                    .InsertAsync( new {
+                        user_id = userId,
+                        collection_code = collections.collectionCode,
+                        collection_count = collections.collectionCount
+                    });
+            }
             return ErrorCode.None;
+        }
+        catch (MySqlException ex)
+        {
+            // 오버플로우인 경우 : number = 1264
+            if (ex.Number == 1264)
+            {
+                _logger.ZLogWarningWithPayload(ex, new { userId = userId, collections = collections }, "GiveCollectionsToUser EXCEPTION");
+                return ErrorCode.OverflowCollectionCount;
+            }
+            _logger.ZLogErrorWithPayload(ex, new { userId = userId, collections = collections }, "GiveCollectionsToUser EXCEPTION");
+            return ErrorCode.GameDbError;
         }
         catch (Exception ex)
         {
@@ -298,6 +319,7 @@ public class MysqlGameDbService : IGameDbService
         }
         catch (Exception ex)
         {
+            
             _logger.ZLogErrorWithPayload(ex, new { userId = userId }, "DeleteAllRecvedMails EXCEPTION");
             return ErrorCode.GameDbError;
         }
@@ -380,17 +402,21 @@ public class MysqlGameDbService : IGameDbService
         }
     }
 
-    String CollectionsInsertQuery(String tableName, Int64 userId, List<CollectionBundle> collections)
+    String CollectionCountAccumulate(String tableName, Int64 userId, CollectionBundle collections)
     {
-        String Query = "INSERT INTO " + tableName + " (user_id, collection_code, collection_count) VALUES ";
-        for (int i = 0; i < collections.Count; i++)
-        {
-            Query += "(" + userId + ", " + collections[i].collectionCode + ", " + collections[i].collectionCount + ")";
-            if (i != collections.Count - 1)
-            {
-                Query += ", ";
-            }
-        }
+        //String Query = "INSERT INTO " + tableName + " (user_id, collection_code, collection_count) VALUES ";
+        //for (int i = 0; i < collections.Count; i++)
+        //{
+        //    Query += "(" + userId + ", " + collections[i].collectionCode + ", " + collections[i].collectionCount + ")";
+        //    if (i != collections.Count - 1)
+        //    {
+        //        Query += ", ";
+        //    }
+        //}
+        String Query = "UPDATE " + tableName 
+            + " SET collection_count = collection_count + " + collections.collectionCount.ToString() 
+            + " WHERE user_id = " + userId.ToString() 
+            + " AND collection_code = " + collections.collectionCode.ToString();
         return Query;
     }
 }

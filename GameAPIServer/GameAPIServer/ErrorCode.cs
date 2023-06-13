@@ -29,10 +29,14 @@
 
         //Mail Error 400 ~ 499
         NotExistMail = 401,
-        ExpiredEmail = 402,
+        ExpiredMail = 402,
+        EmptyMailCollection = 403,
         
         //Attendance Error 500 ~ 599
         AlreadyAttendance = 501,
         MaxRewardStackReached = 502,
+
+        //Collection Error 600 ~ 699
+        OverflowCollectionCount = 601,
     }
 }
